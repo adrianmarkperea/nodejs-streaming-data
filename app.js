@@ -18,7 +18,14 @@ app.get("/stream", (req, res) => {
   const src = fs.createReadStream("hugefile.txt");
 
   src.on("data", (data) => {
-    res.write(data); 
+    const write_success = res.write(data); 
+
+    if (!write_success)
+      src.pause();
+  });
+
+  src.on("drain", () => {
+    src.resume();
   });
 
   src.on("end", () => {
